@@ -73,7 +73,7 @@ def main():
     pbar.close()
 
 if __name__ == "__main__":
-    # Make sure data file exists
+
     os.makedirs("data", exist_ok=True)
     if not os.path.exists(DATA_PATH):
         raise FileNotFoundError(
