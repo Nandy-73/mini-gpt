@@ -26,8 +26,8 @@ class CausalSelfAttention(nn.Module):
         att = att.masked_fill(self.mask[:, :, :T, :T] == 0, float('-inf'))
         att = torch.softmax(att, dim=-1)
         att = self.attn_drop(att)
-        y = att @ v                                # B,h,T,d
-        y = y.transpose(1, 2).contiguous().view(B, T, C)  # merge heads
+        y = att @ v                              
+        y = y.transpose(1, 2).contiguous().view(B, T, C)  
         y = self.resid_drop(self.proj(y))
         return y
 
@@ -72,11 +72,11 @@ class MiniGPT(nn.Module):
     def forward(self, idx):  # idx: (B, T)
         B, T = idx.shape
         assert T <= self.block_size, "Sequence longer than block_size"
-        tok = self.token_emb(idx)                                 # B,T,C
-        pos = self.pos_emb(torch.arange(T, device=idx.device))    # T,C
+        tok = self.token_emb(idx)                                
+        pos = self.pos_emb(torch.arange(T, device=idx.device))   
         x = self.drop(tok + pos[None, :, :])
         for block in self.blocks:
             x = block(x)
         x = self.ln_f(x)
-        logits = self.lm_head(x)                                  # B,T,V
+        logits = self.lm_head(x)                                  
         return logits
